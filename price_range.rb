@@ -7,8 +7,6 @@ class PriceRange
   end
 end
 
-require 'delegate'
-
 class PriceRangePresenter
   attr_reader :low_price, :high_price
 
@@ -22,10 +20,6 @@ class PriceRangePresenter
       low_price.to_s,
       high_price.to_s
     ]).reject(&:empty?).join(' - ')
-  end
-
-  def formatted_price(price)
-    price.to_s
   end
 
   private
