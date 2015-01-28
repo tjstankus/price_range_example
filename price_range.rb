@@ -1,5 +1,3 @@
-# TODO: Use null object and remove SimpleDelegator?
-
 class PriceRange
   attr_reader :low_price, :high_price
 
@@ -11,20 +9,54 @@ end
 
 require 'delegate'
 
-class PriceRangePresenter < SimpleDelegator
+class PriceRangePresenter
+  attr_reader :low_price, :high_price
+
+  def initialize(price_range)
+    @low_price = init_price(price_range.low_price)
+    @high_price = init_price(price_range.high_price)
+  end
+
   def to_s
     Set.new([
-      formatted_price(low_price),
-      formatted_price(high_price)
+      low_price.to_s,
+      high_price.to_s
     ]).reject(&:empty?).join(' - ')
   end
 
   def formatted_price(price)
-    if price
+    price.to_s
+  end
+
+  private
+
+  class FixnumPrice
+    attr_reader :price
+
+    def initialize(price)
+      @price = price
+    end
+
+    def to_s
       "$#{price}"
-    else
+    end
+  end
+
+  class NullPrice
+    attr_reader :price
+
+    def initialize(price)
+      @price = price
+    end
+
+    def to_s
       ''
     end
+  end
+  NilClassPrice = NullPrice
+
+  def init_price(price)
+    Object.const_get("PriceRangePresenter::#{price.class}Price").new(price)
   end
 end
 
